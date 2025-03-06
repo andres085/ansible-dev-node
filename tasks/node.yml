@@ -1,0 +1,28 @@
+- name: Install NPM
+  apt:
+    name: "npm"
+  tags:
+    - node
+
+- name: Install `n` (Node.js Version Manager)
+  npm:
+    name: n
+    global: yes
+  tags:
+    - node
+
+- name: Install Node.js
+  shell: n lts
+  tags: node
+
+- name: Verify Node.js and npm installation
+  shell: |
+    node --version &&
+    npm --version
+  tags: node
+
+- name: Install Yarn Globally
+  npm:
+    name: yarn
+    global: yes
+  tags: node

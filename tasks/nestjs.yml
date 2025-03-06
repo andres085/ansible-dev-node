@@ -1,0 +1,5 @@
+- name: Install NestJS CLI
+  npm:
+    name: "@nestjs/cli"
+    global: yes
+  tags: nest

@@ -1,0 +1,37 @@
+- name: Download AWS CLI installer
+  get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp/awscliv2.zip
+  tags: aws
+
+- name: Install unzip utility (if not already installed)
+  apt:
+    name: unzip
+    state: present
+  tags: aws
+
+- name: Unzip the AWS CLI package
+  unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp
+    remote_src: yes
+  tags: aws
+
+- name: Install AWS CLI
+  command: /tmp/aws/install
+  tags: aws
+
+- name: Verify AWS CLI installation
+  command: aws --version
+  register: aws_version
+  changed_when: false
+  tags: aws
+
+- name: Configure AWS credentials (optional)
+  command: aws configure
+  when: false # Set to true if you want to configure credentials automatically
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_DEFAULT_REGION: "{{ aws_region }}"
+  tags: aws

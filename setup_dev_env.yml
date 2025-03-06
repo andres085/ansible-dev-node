@@ -1,0 +1,32 @@
+- name: Set up local development environment
+  hosts: localhost
+  connection: local
+  become: yes
+  vars:
+    docker_compose_version: "v2.23.0"
+    target_user: "developer"
+  pre_tasks:
+    - name: Update cache
+      become: true
+      apt:
+        force_apt_get: true
+        update_cache: true
+        state: present
+      tags:
+        - aws
+        - node
+        - nest
+        - docker
+
+  tasks:
+    - name: Include AWS CLI installation tasks
+      include_tasks: tasks/aws.yml
+
+    - name: Include Node.js, npm, and N installation tasks
+      include_tasks: tasks/node.yml
+
+    - name: Include NestJS CLI installation tasks
+      include_tasks: tasks/nestjs.yml
+
+    - name: Include Docker and Docker Compose installation tasks
+      include_tasks: tasks/docker.yml
