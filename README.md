@@ -1,4 +1,4 @@
-### NodeJS - Ansible local dev environment
+# NodeJS - Ansible local dev environment
 
 ## Description
 
