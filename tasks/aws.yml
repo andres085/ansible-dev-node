@@ -1,13 +1,22 @@
+- name: Check if AWS CLI is already installed
+  shell: command -v aws >/dev/null 2>&1
+  register: aws_check
+  failed_when: false
+  changed_when: false
+  tags: aws
+
 - name: Download AWS CLI installer
   get_url:
     url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
     dest: /tmp/awscliv2.zip
+  when: aws_check.rc != 0
   tags: aws
 
 - name: Install unzip utility (if not already installed)
   apt:
     name: unzip
     state: present
+  when: aws_check.rc != 0
   tags: aws
 
 - name: Unzip the AWS CLI package
@@ -15,10 +24,12 @@
     src: /tmp/awscliv2.zip
     dest: /tmp
     remote_src: yes
+  when: aws_check.rc != 0
   tags: aws
 
 - name: Install AWS CLI
   command: /tmp/aws/install
+  when: aws_check.rc != 0
   tags: aws
 
 - name: Verify AWS CLI installation

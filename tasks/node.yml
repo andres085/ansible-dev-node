@@ -1,6 +1,25 @@
+- name: Check if npm is installed
+  command: npm --version
+  register: npm_check
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
+  tags:
+    - node
+
 - name: Install NPM
   apt:
     name: "npm"
+  when: npm_check is failed
+  tags:
+    - node
+
+- name: Check if n is installed
+  command: n --version
+  register: n_check
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
   tags:
     - node
 
@@ -8,21 +27,59 @@
   npm:
     name: n
     global: yes
+  when: n_check is failed
   tags:
     - node
 
+- name: Check if Node.js is installed at expected version
+  shell: node --version | grep -q "$(n --lts)"
+  register: node_check
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
+  tags: node
+
 - name: Install Node.js
   shell: n lts
+  when: node_check is failed
   tags: node
 
 - name: Verify Node.js and npm installation
   shell: |
     node --version &&
     npm --version
+  changed_when: false
+  tags: node
+
+- name: Check if Yarn is installed
+  command: yarn --version
+  register: yarn_check
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
   tags: node
 
 - name: Install Yarn Globally
   npm:
     name: yarn
     global: yes
+  become: yes
+  when: yarn_check is failed
   tags: node
+
+- name: Check if NestJS CLI is installed
+  command: nest --version
+  register: nestjs_check
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
+  tags: nest
+
+- name: Install NestJS CLI
+  npm:
+    name: "@nestjs/cli"
+    global: yes
+    state: present
+  when: nestjs_check is failed
+  tags: nest
+  become: yes

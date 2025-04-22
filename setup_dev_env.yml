@@ -15,7 +15,6 @@
       tags:
         - aws
         - node
-        - nest
         - docker
 
   tasks:
@@ -24,9 +23,6 @@
 
     - name: Include Node.js, npm, and N installation tasks
       include_tasks: tasks/node.yml
-
-    - name: Include NestJS CLI installation tasks
-      include_tasks: tasks/nestjs.yml
 
     - name: Include Docker and Docker Compose installation tasks
       include_tasks: tasks/docker.yml

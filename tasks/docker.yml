@@ -1,3 +1,11 @@
+- name: Check if Docker is already installed
+  command: docker --version
+  register: docker_check
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
+  tags: docker
+
 - name: Install dependencies for Docker
   apt:
     name:
@@ -7,18 +15,21 @@
       - software-properties-common
     state: present
     update_cache: yes
+  when: docker_check is failed
   tags: docker
 
 - name: Add Docker GPG key
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
+  when: docker_check is failed
   tags: docker
 
 - name: Add Docker repository
   apt_repository:
     repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
     state: present
+  when: docker_check is failed
   tags: docker
 
 - name: Install Docker
@@ -26,6 +37,15 @@
     name: docker-ce
     state: present
     update_cache: yes
+  when: docker_check is failed
+  tags: docker
+
+- name: Check if Docker service is running
+  command: systemctl is-active docker
+  register: docker_service_check
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
   tags: docker
 
 - name: Start and enable Docker service
@@ -33,6 +53,15 @@
     name: docker
     state: started
     enabled: yes
+  when: docker_service_check is failed or docker_service_check.stdout != "active"
+  tags: docker
+
+- name: Check if user is in docker group
+  shell: groups developer | grep -q docker
+  register: docker_group_check
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
   tags: docker
 
 - name: Add current user to the docker group
@@ -40,6 +69,7 @@
     name: developer
     groups: docker
     append: yes
+  when: docker_group_check is failed
   tags: docker
 
 - name: Verify Docker installation
@@ -53,20 +83,29 @@
     var: docker_version.stdout
   tags: docker
 
+- name: Check if Docker Compose is already installed
+  command: docker-compose --version
+  register: docker_compose_check
+  ignore_errors: yes
+  changed_when: false
+  check_mode: no
+  tags: docker
+
 - name: Download Docker Compose
   get_url:
     url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-x86_64
     dest: /usr/local/bin/docker-compose
     mode: "0755"
+  when: docker_compose_check is failed
   tags: docker
 
 - name: Verify Docker Compose installation
   command: docker-compose --version
-  register: docker_compose_version
+  register: docker_compose_version_output
   changed_when: false
   tags: docker
 
 - name: Display Docker Compose version
   debug:
-    var: docker_compose_version.stdout
+    var: docker_compose_version_output.stdout
   tags: docker

@@ -10,7 +10,7 @@ sudo apt update && sudo apt install ansible
 ansible-playbook setup_dev_env.yml
 ```
 
-### Run with AWS Credentials
+### Run with AWS Credentials (only execute if needed, this step can be done manually)
 
 ```bash
 ansible-playbook setup_dev_env.yml -e "aws_access_key=YOUR_ACCESS_KEY aws_secret_key=YOUR_SECRET_KEY aws_region=YOUR_REGION"
