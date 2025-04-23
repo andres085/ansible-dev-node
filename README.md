@@ -32,7 +32,9 @@ This repository contains the Ansible playbook configuration to setup the local e
    ansible-playbook setup_dev_env.yml -e "aws_access_key=YOUR_ACCESS_KEY aws_secret_key=YOUR_SECRET_KEY aws_region=YOUR_REGION"
    ```
 
-4. Verify versions
+4. Wait for the installation of the dependencies
+
+5. Verify versions
 
    ```bash
    aws --version
@@ -43,12 +45,20 @@ This repository contains the Ansible playbook configuration to setup the local e
    docker-compose --version
    ```
 
-## Docker test
+## Docker to test the playbook
 
-To test the changes in the Ansible playbook use:
+To test the changes in the Ansible playbook
+
+1. Build and run the container with the latest changes
 
 ```bash
 docker build -t dev-env-test . # Use this command to build the container
 
 docker run -it dev-env-test # Use this command to run the container and enter on it
+```
+
+2. Run the playbook inside the docker container
+
+```bash
+ansible-playbook setup_dev_env.yml
 ```
